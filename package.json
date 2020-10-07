@@ -1,0 +1,9 @@
+{
+  "name": "dynamodb-migrations",
+  "version": "1.0.0",
+  "description": "DynamoDB Migration Example",
+  "main": "index.js",
+  "repository": "https://github.com/theandypeterson/dynamodb-migration-example",
+  "author": "Andy Peterson <andy.peterson@atomicobject.com>",
+  "license": "MIT"
+}
