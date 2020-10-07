@@ -3,7 +3,23 @@
   "version": "1.0.0",
   "description": "DynamoDB Migration Example",
   "main": "index.js",
-  "repository": "https://github.com/theandypeterson/dynamodb-migration-example",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theandypeterson/dynamodb-migration-example.git"
+  },
   "author": "Andy Peterson <andy.peterson@atomicobject.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/theandypeterson/dynamodb-migration-example/issues"
+  },
+  "homepage": "https://github.com/theandypeterson/dynamodb-migration-example#readme",
+  "scripts": {
+    "test": "node index.js",
+    "seed": "node seed-users.js",
+    "clear": "node clear-all.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.768.0",
+    "node": "^14.13.0"
+  }
 }
