@@ -2,10 +2,9 @@ const fs = require('fs');
 
 const run = async () => {
   const migrationFiles = fs.readdirSync('./migrations');
-
-  console.log('migrationFiles', migrationFiles)
-  for (const fileName of migrationFiles) {
-    const migration = require(`./migrations/${fileName}`);
+  const migrations = migrationFiles.map((fileName) => require(`./migrations/${fileName}`)).sort((a, b) => b.sequence - a.sequence);
+  for (const migration of migrations) {
+    console.log('migrating: ', migration.sequence)
     await migration.down();
   }
 }

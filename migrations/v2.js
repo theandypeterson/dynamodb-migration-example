@@ -14,9 +14,10 @@ const up = async () => {
     }).promise();
     lastEvalKey = LastEvaluatedKey;
     const updatedItems = Items.map((item) => {
+      const { status, ...rest } = item;
       return {
-        ...item,
-        status: 'Active',
+        ...rest,
+        Status: status,
       };
     });
     await Promise.all(updatedItems.map((item) =>
@@ -42,8 +43,11 @@ const down = async () => {
     }).promise();
     lastEvalKey = LastEvaluatedKey;
     const updatedItems = Items.map((item) => {
-      const { status, ...rest } = item;
-      return rest;
+      const { Status, ...rest } = item;
+      return {
+        ...rest,
+        status: Status,
+      };
     });
     await Promise.all(updatedItems.map((item) =>
       db.put({
@@ -57,5 +61,5 @@ const down = async () => {
 module.exports = {
   up,
   down,
-  sequence: 1,
+  sequence: 2,
 };
