@@ -1,20 +1,22 @@
+
 const fs = require('fs');
-const { revert, getLatestBatch, removeBatch } = require('./helpers');
+const { revert, getLatestBatch, removeSequenceFromBatch } = require('./helpers');
 
 const run = async () => {
   const latestBatch = await getLatestBatch();
   if (!latestBatch) {
     return;
   }
+  const lastSequence = latestBatch.sequences.sort().reverse()[0];
   const migrationFiles = fs.readdirSync('./migrations');
   const migrations = migrationFiles.map((fileName) => require(`./migrations/${fileName}`))
-    .sort((a, b) => b.sequence - a.sequence)
-    .filter((migration) => latestBatch.sequences.includes(migration.sequence));
+    .sort((a, b) => a.sequence - b.sequence)
+    .filter(x => x.sequence === lastSequence);
   for (const migration of migrations) {
     console.log('reverting: ', migration.sequence)
     await revert(migration.down);
   }
-  await removeBatch(latestBatch.batchNumber);
+  await removeSequenceFromBatch(latestBatch.batchNumber, lastSequence);
 }
 
 const main = () => {

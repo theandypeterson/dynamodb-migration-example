@@ -42,9 +42,7 @@ const setMigrationIsRun = async (batch, sequence) => {
       RecordId: 'Migrations'
     },
   }).promise();
-  console.log('Item', Item);
   const existingBatches = Item ? Item.Batches : {};
-  console.log('existingBatches', existingBatches);
   const batchToUpdate = existingBatches[batch] || [];
   batchToUpdate.push(sequence);
   const updatedItem = {
@@ -55,12 +53,45 @@ const setMigrationIsRun = async (batch, sequence) => {
       [batch]: batchToUpdate,
     }
   }
-  console.log('updatedItem', updatedItem);
   await db.put({
     TableName: process.env.DYNAMODB_TABLE_NAME,
     Item: updatedItem,
   }).promise()
 }
+
+const removeSequenceFromBatch = async (batchNumber, sequence) => {
+  const db = new DynamoDB.DocumentClient();
+  const { Item } = await db.get({
+    TableName: process.env.DYNAMODB_TABLE_NAME,
+    Key: {
+      RecordId: 'Migrations'
+    },
+  }).promise();
+  if (!Item) {
+    return;
+  }
+  const sequences = Item.Batches[`${batchNumber}`];
+  const index = sequences.indexOf(sequence);
+  if (index > -1) {
+    sequences.splice(index, 1);
+  }
+  if (sequences.length === 0) {
+    await removeBatch(batchNumber);
+  } else {
+    const updatedItem = {
+      ...Item,
+      RecordId: 'Migrations',
+      Batches: {
+        ...Item.Batches,
+        [batchNumber]: sequences,
+      }
+    };
+    await db.put({
+      TableName: process.env.DYNAMODB_TABLE_NAME,
+      Item: updatedItem,
+    }).promise();
+  }
+};
 
 const getLatestBatch = async () => {
   const db = new DynamoDB.DocumentClient();
@@ -73,11 +104,8 @@ const getLatestBatch = async () => {
   if (!Item) {
     return;
   }
-  console.log('Item.Batches', Item.Batches);
   const batches = Object.keys(Item.Batches).map((x) => parseInt(x, 10)).sort().reverse();
-  console.log('batches', batches);
   const latestBatchNumber = batches[0];
-  console.log('latestBatchNumber', latestBatchNumber);
   if (!latestBatchNumber) {
     return;
   }
@@ -116,8 +144,6 @@ const migrate = async (batch, sequence, updateFn) => {
   if (!isMigrationRun) {
     await applyUpdateToAllUsers(updateFn);
     await setMigrationIsRun(batch, sequence);
-  } else {
-    console.log('Skipping ', sequence);
   }
 }
 
@@ -130,4 +156,5 @@ module.exports = {
   revert,
   getLatestBatch,
   removeBatch,
+  removeSequenceFromBatch,
 };

@@ -17,8 +17,11 @@
     "test": "node index.js",
     "seed": "node seed-users.js",
     "clear": "node clear-all.js",
+    "reset": "yarn clear && yarn seed",
     "migrate": "node migrate.js",
-    "rollback": "node rollback.js"
+    "rollback": "node rollback.js",
+    "up": "node up.js",
+    "down": "node down.js"
   },
   "dependencies": {
     "aws-sdk": "^2.768.0",
