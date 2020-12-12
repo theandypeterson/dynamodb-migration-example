@@ -23,8 +23,8 @@
     "up": "node up.js",
     "down": "node down.js",
     "deploy": "yarn zip && yarn upload",
-    "zip": "zip dist/connect.zip connect.js && zip dist/disconnect.zip disconnect.js",
-    "upload": "aws lambda update-function-code --function-name connect --zip-file fileb://dist/connect.zip --region ca-central-1 && aws lambda update-function-code --function-name disconnect --zip-file fileb://dist/disconnect.zip --region ca-central-1"
+    "zip": "zip dist/connect.zip connect.js && zip dist/disconnect.zip disconnect.js && zip dist/trigger.zip trigger.js",
+    "upload": "aws lambda update-function-code --function-name connect --zip-file fileb://dist/connect.zip --region ca-central-1 && aws lambda update-function-code --function-name disconnect --zip-file fileb://dist/disconnect.zip --region ca-central-1 && aws lambda update-function-code --function-name dynamoTrigger --zip-file fileb://dist/trigger.zip --region ca-central-1"
   },
   "dependencies": {
     "aws-sdk": "^2.768.0",
